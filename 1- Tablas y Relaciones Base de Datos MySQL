@@ -240,3 +240,15 @@ FOREIGN KEY (id_local) REFERENCES locales(id_local);
 ALTER TABLE inventario
 ADD CONSTRAINT uk_inventario_local_producto
 UNIQUE (id_local, id_producto);
+
+-- ============================================
+-- AGREGA COLUMNA USUARIO DEL SISTEMA
+-- ============================================
+
+ALTER TABLE usuarios_sistema
+ADD COLUMN id_empleado INT NOT NULL;
+
+ALTER TABLE usuarios_sistema
+ADD CONSTRAINT fk_usuario_empleado
+FOREIGN KEY (id_empleado)
+REFERENCES empleados(id_empleado);
