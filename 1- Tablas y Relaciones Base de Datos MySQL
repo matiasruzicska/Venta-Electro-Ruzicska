@@ -214,3 +214,29 @@ FOREIGN KEY (id_cliente) REFERENCES clientes (id_cliente),
 ADD CONSTRAINT fk_garantias_ventas
 FOREIGN KEY (id_venta) REFERENCES ventas (id_venta);
 
+-- ============================================
+-- MEJORAS DE MODELO
+-- ============================================
+
+-- Relacionar vendedores con locales
+ALTER TABLE vendedores
+ADD COLUMN id_local INT NOT NULL;
+
+ALTER TABLE vendedores
+ADD CONSTRAINT fk_vendedores_local
+FOREIGN KEY (id_local) REFERENCES locales(id_local);
+
+
+-- Relacionar ventas con locales
+ALTER TABLE ventas
+ADD COLUMN id_local INT NOT NULL;
+
+ALTER TABLE ventas
+ADD CONSTRAINT fk_ventas_local
+FOREIGN KEY (id_local) REFERENCES locales(id_local);
+
+
+-- Evitar duplicados de producto en inventario por local
+ALTER TABLE inventario
+ADD CONSTRAINT uk_inventario_local_producto
+UNIQUE (id_local, id_producto);
