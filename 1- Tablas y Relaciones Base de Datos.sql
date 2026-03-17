@@ -252,3 +252,4 @@ ALTER TABLE usuarios_sistema
 ADD CONSTRAINT fk_usuario_empleado
 FOREIGN KEY (id_empleado)
 REFERENCES empleados(id_empleado);
+
