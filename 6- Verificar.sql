@@ -1,58 +1,46 @@
 
---Registro Cliente
+-- Trigger que descuenta stock al vender un producto
 
 DELIMITER //
 
-CREATE PROCEDURE registrar_cliente(
-IN p_nombre VARCHAR(50),
-IN p_apellido VARCHAR(50),
-IN p_email VARCHAR(100),
-IN p_telefono VARCHAR(20)
-)
+CREATE TRIGGER descontar_stock
+AFTER INSERT ON detalle_venta
+FOR EACH ROW
 BEGIN
-
-INSERT INTO clientes(nombre,apellido,email,telefono)
-VALUES(p_nombre,p_apellido,p_email,p_telefono);
-
+    UPDATE inventario
+    SET stock = stock - NEW.cantidad
+    WHERE id_producto = NEW.id_producto;
 END //
 
 DELIMITER ;
 
--- Registro Srocñ
+-- Trigger que registra cambios de precio de productos
+
+-- Creamos la tabla de Historial
+
+CREATE TABLE historial_precios (
+    id_historial INT AUTO_INCREMENT PRIMARY KEY,
+    id_producto INT,
+    precio_anterior DECIMAL(10,2),
+    precio_nuevo DECIMAL(10,2),
+    fecha_cambio DATETIME
+);
+
+-- Luego el tigger
 
 DELIMITER //
 
-CREATE PROCEDURE actualizar_stock(
-IN p_producto INT,
-IN p_local INT,
-IN p_cantidad INT
-)
+CREATE TRIGGER registrar_cambio_precio
+AFTER UPDATE ON productos
+FOR EACH ROW
 BEGIN
-
-UPDATE inventario
-SET stock = stock - p_cantidad
-WHERE id_producto = p_producto
-AND id_local = p_local;
-
+    IF OLD.precio <> NEW.precio THEN
+        INSERT INTO historial_precios
+        (id_producto, precio_anterior, precio_nuevo, fecha_cambio)
+        VALUES
+        (OLD.id_producto, OLD.precio, NEW.precio, NOW());
+    END IF;
 END //
 
 DELIMITER ;
 
--- Registro devoluvcioon
-
-DELIMITER //
-
-CREATE PROCEDURE registrar_devolucion(
-IN p_venta INT,
-IN p_producto INT,
-IN p_motivo VARCHAR(100),
-IN p_fecha DATE
-)
-BEGIN
-
-INSERT INTO devoluciones(id_venta,id_producto,motivo,fecha)
-VALUES(p_venta,p_producto,p_motivo,p_fecha);
-
-END //
-
-DELIMITER ;
